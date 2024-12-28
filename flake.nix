@@ -14,10 +14,8 @@
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
       treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
-    in
-    {
-      formatter.${system} = treefmtEval.config.build.wrapper;
-      packages.${system}.default = pkgs.buildGoModule {
+
+      schlingel = pkgs.buildGoModule {
         name = "schlingel";
         version = "0.0.1";
         #vendorHash = pkgs.lib.fakeHash;
@@ -26,6 +24,21 @@
           ${pkgs.templ}/bin/templ generate
         '';
         src = ./.;
+      };
+
+      containerImage = pkgs.dockerTools.buildLayeredImage {
+        name = "ghcr.io/jgero/schlingel";
+        tag = "unstable";
+        config = {
+          Entrypoint = [ "${schlingel}/bin/schlingel" ];
+        };
+      };
+    in
+    {
+      formatter.${system} = treefmtEval.config.build.wrapper;
+      packages.${system} = {
+        default = schlingel;
+        containerimage = containerImage;
       };
       devShells.${system}.default = pkgs.mkShell {
         buildInputs = with pkgs; [
