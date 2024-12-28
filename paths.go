@@ -15,5 +15,10 @@ func pages() []api.HtmxPartialRenderer {
 				return page.Index().Render(ctx, w)
 			}
 		},
+		func() (string, func(context.Context, io.Writer, map[string]string) error) {
+			return "/content", func(ctx context.Context, w io.Writer, params map[string]string) error {
+				return page.Content().Render(ctx, w)
+			}
+		},
 	}
 }
