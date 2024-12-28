@@ -7,11 +7,15 @@ templ Index() {
 			<meta charset="utf-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1"/>
 			<title>HTML5 Boilerplate</title>
-			<link rel="stylesheet" href="styles.css"/>
+            <script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
 		</head>
 		<body>
 			<h1>Page Title</h1>
-			<script src="scripts.js"></script>
+            <div hx-get="/content" hx-trigger="revealed"></div>
 		</body>
 	</html>
+}
+
+templ Content() {
+    <h2>Content</h2>
 }
