@@ -1,21 +1,20 @@
 {
-  description = "A very basic flake";
+  description = "An application to share work";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
-    devenv.url = "github:cachix/devenv";
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  outputs = { self, nixpkgs, devenv, treefmt-nix } @ inputs:
+  outputs = { self, nixpkgs, treefmt-nix }:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
       treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
-      lib = pkgs.lib;
+      # lib = pkgs.lib;
     in
     {
       formatter.${system} = treefmtEval.config.build.wrapper;
@@ -29,16 +28,12 @@
         '';
         src = ./.;
       };
-      devShells.${system}.default = devenv.lib.mkShell {
-        inherit inputs pkgs;
-        modules = [
-          {
-            languages.go.enable = true;
-            packages = with pkgs; [
-              reflex
-              templ
-            ];
-          }
+      devShells.${system}.default = pkgs.mkShell {
+        buildInputs = with pkgs; [
+          go
+          gopls
+          reflex
+          templ
         ];
       };
     };
