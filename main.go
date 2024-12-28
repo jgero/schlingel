@@ -5,6 +5,6 @@ import (
 )
 
 func main() {
-	router := api.BuildRouter()
+	router := api.BuildRouter(pages())
 	router.Run(":8080")
 }
