@@ -4,7 +4,7 @@
 
 ```bash
 # enter dev shell
-nix develop --impure
+nix develop
 
 # apply code format
 nix fmt

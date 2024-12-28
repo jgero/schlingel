@@ -1,0 +1,23 @@
+name: "CI Pipeline"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    types: [ "opened", "synchronize", "reopened" ]
+
+jobs:
+  flake-check:
+    name: "Flake check"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install nix package manager
+        uses: DeterminateSystems/nix-installer-action@v16
+
+      - name: Run flake check
+        uses: nix flake check
