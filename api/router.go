@@ -1,26 +1,42 @@
 package api
 
 import (
+	"bytes"
+	"context"
+	"io"
 	"net/http"
 
-	"github.com/a-h/templ"
 	"github.com/gin-gonic/gin"
-	"github.com/jgero/schlingel/page"
 )
 
-func BuildRouter() *gin.Engine {
+type HtmxPartialRenderer = func() (string, func(context.Context, io.Writer, map[string]string) error)
+
+func BuildRouter(pages []HtmxPartialRenderer) *gin.Engine {
 	router := gin.Default()
 	// Set a lower memory limit for multipart forms (default is 32 MiB)
 	router.MaxMultipartMemory = 8 << 20 // 8 MiB
 	router.POST("/files/upload", uploadFile)
 	router.GET("/files/:filename", downloadFile)
-	router.GET("/", func(c *gin.Context) {
-		_ = render(c, http.StatusOK, page.Index())
-	})
+
+	for _, p := range pages {
+		path, r := p()
+		router.GET(path, func(c *gin.Context) {
+			var buf bytes.Buffer
+			err := r(c.Request.Context(), &buf, paramsToMap(c.Params))
+			if err != nil {
+				panic(err)
+			}
+			c.Data(http.StatusOK, "text/html; charset=utf-8", buf.Bytes())
+		})
+	}
 	return router
 }
 
-func render(c *gin.Context, status int, template templ.Component) error {
-	c.Status(status)
-	return template.Render(c.Request.Context(), c.Writer)
+func paramsToMap(params gin.Params) map[string]string {
+	m := make(map[string]string)
+	for _, p := range params {
+		m[p.Key] = p.Value
+	}
+	return m
 }
+
