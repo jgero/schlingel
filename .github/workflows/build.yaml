@@ -2,10 +2,10 @@ name: "CI Pipeline"
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
-    types: [ "opened", "synchronize", "reopened" ]
+    branches: ["main"]
+    types: ["opened", "synchronize", "reopened"]
 
 jobs:
   flake-check:
@@ -20,4 +20,4 @@ jobs:
         uses: DeterminateSystems/nix-installer-action@v16
 
       - name: Run flake check
-        uses: nix flake check
+        run: nix flake check
