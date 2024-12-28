@@ -1,7 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"github.com/jgero/schlingel/api"
+)
 
 func main() {
-	fmt.Println("Hello, World!")
+	router := api.BuildRouter()
+	router.Run(":8080")
 }
