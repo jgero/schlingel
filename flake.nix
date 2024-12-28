@@ -14,15 +14,14 @@
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
       treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
-      # lib = pkgs.lib;
     in
     {
       formatter.${system} = treefmtEval.config.build.wrapper;
       packages.${system}.default = pkgs.buildGoModule {
         name = "schlingel";
         version = "0.0.1";
-        # vendorHash = lib.fakeHash;
-        vendorHash = "sha256-LGEKehYWz3QdpB87I1EL+xJ4NAcYjLaen+xvmNwCeDs=";
+        #vendorHash = pkgs.lib.fakeHash;
+        vendorHash = "sha256-hg+S9rfKPpCDsFyXXrGDtHNytFQ3AIU/PJA6jCLvYdU=";
         preBuild = ''
           ${pkgs.templ}/bin/templ generate
         '';
