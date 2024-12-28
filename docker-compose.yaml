@@ -1,0 +1,8 @@
+version: "3.9"
+
+services:
+  schlingel:
+    container_name: schlingel
+    image: ghcr.io/jgero/schlingel:unstable
+    ports:
+      - 8080:8080
