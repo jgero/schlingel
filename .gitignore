@@ -1,3 +1,8 @@
 .devenv
 result
 *.pdf
+
+
+# Added by cargo
+
+/target
