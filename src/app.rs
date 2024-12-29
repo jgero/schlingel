@@ -41,10 +41,50 @@ pub fn App() -> impl IntoView {
             <main>
                 <Routes fallback=|| "Page not found.".into_view()>
                     <Route path=StaticSegment("") view=HomePage/>
+                    <Route path=StaticSegment("list") view=ListPage/>
                 </Routes>
             </main>
         </Router>
     }
+}
+
+#[component]
+fn ListPage() -> impl IntoView {
+    let items = (1..=5)
+        .collect::<Vec<usize>>();
+    view! {
+        <ul>
+        {items.iter()
+            .map(|r| view! { <li><ListItem index=*r></ListItem></li> })
+                .collect_view()
+        }
+        </ul>
+    }
+}
+
+#[component]
+fn ListItem(index: usize) -> impl IntoView {
+    let ( s, _ ) = signal(index);
+    let rsc = Resource::new(
+        move || s.get(),
+        // every time `count` changes, this will run
+        |count| get_content(count));
+    view! {
+        <Suspense fallback=move || view! { <span>Loading...</span> }>
+        {move || Suspend::new(async move {
+            let a = rsc.await;
+            view! {
+                <span>{a.unwrap_or(0)}</span>
+            }
+        })}
+        </Suspense>
+    }
+}
+
+#[server]
+pub async fn get_content(index: usize) -> Result<usize, ServerFnError> {
+    tokio::time::sleep(tokio::time::Duration::from_secs(index.try_into().unwrap())).await;
+    return Ok(index);
 }
 
 /// Renders the home page of your application.
@@ -59,3 +99,4 @@ fn HomePage() -> impl IntoView {
         <button on:click=on_click>"Click Me: " {count}</button>
     }
 }
+
