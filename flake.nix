@@ -12,6 +12,7 @@
 
   outputs = { nixpkgs, rust-overlay, treefmt-nix, ... }:
     let
+      pname = "schlingel";
       system = "x86_64-linux";
       pkgs = import nixpkgs {
         inherit system;
@@ -36,8 +37,8 @@
           cargo clippy
         '';
       };
-      packages.${system}.default = rustPlatform.buildRustPackage rec {
-        pname = "schlingel";
+      packages.${system}.default = rustPlatform.buildRustPackage {
+        inherit pname;
         version = "0.1.0";
         src = ./.;
         cargoLock = {
@@ -48,6 +49,7 @@
           binaryen
           wasm-pack
           cargo-leptos
+          postgresql
         ];
         buildPhase = ''
           HOME=$TMPDIR cargo leptos build --release -vv
@@ -70,7 +72,14 @@
           cargo-generate
           binaryen
           clippy
+          diesel-cli
+          podman-compose
+          libpqxx
+          postgresql
         ];
+        shellHook = ''
+          export DATABASE_URL=postgres://${pname}:${pname}@0.0.0.0/${pname}
+        '';
       };
     };
 }

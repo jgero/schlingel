@@ -28,7 +28,7 @@ pub fn App() -> impl IntoView {
     // Provides context that manages stylesheets, titles, meta tags, etc.
     provide_meta_context();
 
-    view! {
+    let var_name = view! {
         // injects a stylesheet into the document <head>
         // id=leptos means cargo-leptos will hot-reload this stylesheet
         <Stylesheet id="leptos" href="/pkg/schlingel.css"/>
@@ -40,18 +40,18 @@ pub fn App() -> impl IntoView {
         <Router>
             <main>
                 <Routes fallback=|| "Page not found.".into_view()>
-                    <Route path=StaticSegment("") view=HomePage/>
+                    <Route path=StaticSegment("") view=crate::pages::HomePage/>
                     <Route path=StaticSegment("list") view=ListPage/>
                 </Routes>
             </main>
         </Router>
-    }
+    };
+    var_name
 }
 
 #[component]
 fn ListPage() -> impl IntoView {
-    let items = (1..=5)
-        .collect::<Vec<usize>>();
+    let items = (1..=5).collect::<Vec<usize>>();
     view! {
         <ul>
         {items.iter()
@@ -64,11 +64,12 @@ fn ListPage() -> impl IntoView {
 
 #[component]
 fn ListItem(index: usize) -> impl IntoView {
-    let ( s, _ ) = signal(index);
+    let (s, _) = signal(index);
     let rsc = Resource::new(
         move || s.get(),
         // every time `count` changes, this will run
-        |count| get_content(count));
+        |count| get_content(count),
+    );
     view! {
         <Suspense fallback=move || view! { <span>Loading...</span> }>
         {move || Suspend::new(async move {
@@ -83,20 +84,7 @@ fn ListItem(index: usize) -> impl IntoView {
 
 #[server]
 pub async fn get_content(index: usize) -> Result<usize, ServerFnError> {
+    crate::db::run_migrations();
     tokio::time::sleep(tokio::time::Duration::from_secs(index.try_into().unwrap())).await;
     return Ok(index);
 }
-
-/// Renders the home page of your application.
-#[component]
-fn HomePage() -> impl IntoView {
-    // Creates a reactive value to update the button
-    let count = RwSignal::new(0);
-    let on_click = move |_| *count.write() += 1;
-
-    view! {
-        <h1>"Welcome to Leptos!"</h1>
-        <button on:click=on_click>"Click Me: " {count}</button>
-    }
-}
-

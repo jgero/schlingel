@@ -11,11 +11,22 @@ tower-http = {version = "0.5", features = ["fs"], optional = true}
 wasm-bindgen = "=0.2.95"
 thiserror = "1"
 http = "1"
+diesel = {version = "2.1.0", features = ["postgres"], optional = true}
+diesel_migrations = "2.2.0"
+
+[dependencies.uuid]
+version = "1.11.0"
+features = [
+  "v4",
+  "v7",
+  "js"
+]
 
 [features]
 hydrate = ["leptos/hydrate"]
 ssr = [
   "dep:axum",
+  "dep:diesel",
   "dep:tokio",
   "dep:tower",
   "dep:tower-http",
