@@ -2,7 +2,7 @@
   description = "An application to share work";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-24.11";
+    nixpkgs.url = "nixpkgs/nixos-unstable";
     rust-overlay = { url = "github:oxalica/rust-overlay"; };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
@@ -46,6 +46,7 @@
         };
         nativeBuildInputs = with pkgs; [
           rustWasm
+          wasm-bindgen-cli_0_2_100
           binaryen
           wasm-pack
           cargo-leptos
@@ -64,6 +65,7 @@
       devShells.${system}.default = pkgs.mkShell {
         buildInputs = with pkgs; [
           rustWasm
+          wasm-bindgen-cli_0_2_100
           cargo
           cargo-watch
           nodejs

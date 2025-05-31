@@ -1,4 +1,7 @@
 #[cfg(feature = "ssr")]
+pub mod db;
+
+#[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
     use axum::Router;
@@ -6,6 +9,8 @@ async fn main() {
     use leptos::prelude::*;
     use leptos_axum::{generate_route_list, LeptosRoutes};
     use schlingel::app::*;
+
+    crate::db::run_migrations();
 
     let conf = get_configuration(None).unwrap();
     let addr = conf.leptos_options.site_addr;
