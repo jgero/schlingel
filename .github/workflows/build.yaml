@@ -12,7 +12,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Install nix package manager
         uses: DeterminateSystems/nix-installer-action@v16
       - name: Run flake check
